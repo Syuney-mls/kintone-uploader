@@ -1,0 +1,10 @@
+# Secret files
+client_secret.json
+token.json
+config.json
+
+# Python cache files
+__pycache__/
+
+# Temporary upload folder
+uploads/

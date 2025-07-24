@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>設定 - kintone動画アップローダー</title>
+    <style>
+        /* (CSSは変更なし) */
+        body { font-family: sans-serif; background-color: #f7f9fa; margin: 0; padding: 20px; }
+        .container { background-color: #fff; max-width: 800px; margin: 20px auto; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        header { background-color: #F7D553; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 25px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 5px; }
+        input[type="text"] { width: 100%; padding: 10px; border: 1px solid #e0e0e0; border-radius: 4px; box-sizing: border-box; }
+        .submit-btn { display: inline-block; background-color: #3498db; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        a { color: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>設定</h1>
+        </header>
+        <div class="content">
+            <h2>kintoneアプリ設定の追加</h2>
+            <form action="/save_settings" method="post">
+                <div class="form-group">
+                    <label>アプリ名（識別用）</label>
+                    <input type="text" name="app_name" placeholder="例：動画管理アプリ" required>
+                </div>
+                <div class="form-group">
+                    <label>kintoneドメイン</label>
+                    <input type="text" name="kintone_domain" placeholder="example.cybozu.com" required>
+                </div>
+                <div class.form-group">
+                    <label>kintoneアプリID</label>
+                    <input type="text" name="kintone_app_id" required>
+                </div>
+                <div class.form-group">
+                    <label>kintoneフィールドコード</label>
+                    <input type="text" name="kintone_field_code" required>
+                </div>
+                <div class="form-group">
+                    <label>kintone APIトークン</label>
+                    <input type="text" name="kintone_api_token" required>
+                </div>
+                <div class="form-group">
+                    <label>Google Drive フォルダID</label>
+                    <input type="text" name="drive_folder_id" required>
+                </div>
+                <button type="submit" class="submit-btn">この設定を保存する</button>
+            </form>
+
+            <hr style="margin: 30px 0;">
+
+            <h2>登録済みアプリ一覧</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>アプリ名</th>
+                        <th>フィールドコード</th>
+                        <th>アプリID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for config in configs %}
+                    <tr>
+                        <td>{{ config.app_name }}</td>
+                        <td>{{ config.kintone_field_code }}</td>
+                        <td>{{ config.kintone_app_id }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <br>
+            <a href="/">&laquo; トップページに戻る</a>
+        </div>
+    </div>
+</body>
+</html>

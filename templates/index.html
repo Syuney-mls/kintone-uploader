@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>kintone動画アップローダー</title>
+    <style>
+        /* (CSSは変更なし) */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif; background-color: #f7f9fa; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background-color: #ffffff; width: 100%; max-width: 600px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); overflow: hidden; }
+        header { background-color: #F7D553; padding: 20px; text-align: center; }
+        header h1 { margin: 0; font-size: 24px; color: #333; }
+        form { padding: 25px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 5px; color: #4f4f4f; }
+        .form-group input[type="text"], .form-group input[type="file"], .form-group select { width: 100%; padding: 10px; border: 1px solid #e0e0e0; border-radius: 4px; box-sizing: border-box; }
+        .submit-btn { width: 100%; background-color: #3498db; color: white; padding: 12px; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s ease; }
+        .submit-btn:hover { background-color: #2980b9; }
+        .submit-btn:disabled { background-color: #a9a9a9; cursor: not-allowed; }
+        /* ▼▼▼ プログレスバー用のスタイルを追加 ▼▼▼ */
+        .progress-container { display: none; margin-top: 15px; }
+        .progress-bar { width: 100%; background-color: #e0e0e0; border-radius: 4px; overflow: hidden; }
+        .progress-bar-fill { height: 20px; width: 0%; background-color: #2ecc71; text-align: center; color: white; line-height: 20px; transition: width 0.3s ease; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>kintone動画アップローダー</h1>
+        </header>
+        <div style="padding: 10px 25px; background: #f0f0f0; border-bottom: 1px solid #ddd;">
+            <a href="/settings">⚙️ 設定ページへ</a>
+        </div>
+        
+        <form id="upload-form"> <div class="form-group">
+                <label for="app_name">1. 更新対象アプリを選択</label>
+                <select id="app_name" name="app_name" required>
+                    <option value="">-- アプリを選択してください --</option>
+                    {% for config in configs %}
+                        <option value="{{ config.app_name }}">{{ config.app_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="record_id">2. 更新対象のレコード番号</label>
+                <input type="text" id="record_id" name="record_id" placeholder="例: 10" required>
+            </div>
+            <div class="form-group">
+                <label for="video_file">3. 動画ファイルを選択</label>
+                <input type="file" id="video_file" name="video_file" required>
+            </div>
+            
+            <button type="submit" id="submit-button" class="submit-btn">アップロードしてkintone更新</button>
+
+            <div id="progress-container" class="progress-container">
+                <div id="status-message" style="margin-bottom: 5px; font-weight: bold;"></div>
+                <div class="progress-bar">
+                    <div id="progress-bar-fill" class="progress-bar-fill">0%</div>
+                </div>
+            </div>
+            <div id="error-message" style="color: red; margin-top: 10px; font-weight: bold;"></div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const submitButton = document.getElementById('submit-button');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        const statusMessage = document.getElementById('status-message');
+        const errorMessage = document.getElementById('error-message');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // デフォルトのフォーム送信をキャンセル
+
+            // UIをリセット
+            submitButton.disabled = true;
+            errorMessage.textContent = '';
+            progressContainer.style.display = 'block';
+
+            const formData = new FormData(form);
+            const xhr = new XMLHttpRequest();
+
+            xhr.open('POST', '/upload', true);
+
+            // アップロード進捗イベント
+            xhr.upload.addEventListener('progress', function(e) {
+                if (e.lengthComputable) {
+                    const percentComplete = Math.round((e.loaded / e.total) * 100);
+                    progressBarFill.style.width = percentComplete + '%';
+                    progressBarFill.textContent = percentComplete + '%';
+                    statusMessage.textContent = `アップロード中...`;
+                }
+            });
+
+            // 通信完了イベント
+            xhr.onload = function() {
+                submitButton.disabled = false;
+                progressContainer.style.display = 'none'; // 完了したら隠す
+                
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        // 成功したら、完了ページにリダイレクト
+                        window.location.href = response.redirect_url;
+                    } else {
+                        errorMessage.textContent = 'エラー: ' + response.message;
+                    }
+                } else {
+                    errorMessage.textContent = 'サーバーエラーが発生しました。';
+                }
+            };
+            
+            // 通信開始
+            xhr.send(formData);
+        });
+    </script>
+</body>
+</html>

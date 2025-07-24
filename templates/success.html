@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>成功 - kintone動画アップローダー</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f7f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { text-align: center; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2ecc71; } /* 成功の緑色 */
+        p { font-size: 18px; }
+        .kintone-link { display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #3498db; color: #fff; text-decoration: none; border-radius: 5px; }
+        .home-link { display: block; margin-top: 30px; color: #7f8c8d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ 更新完了！</h1>
+        <p>kintoneレコードの更新が正常に完了しました。</p>
+        <a href="{{ kintone_url }}" target="_blank" class="kintone-link">更新したkintoneレコードを確認する</a>
+        <a href="/" class="home-link">&laquo; トップページに戻る</a>
+    </div>
+</body>
+</html>
